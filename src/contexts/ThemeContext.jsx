@@ -14,10 +14,19 @@ export const ThemeProvider = ({ children }) => {
     setDarkMode(prevMode => !prevMode);
   }, []);
 
-  // Efeito para aplicar o tema
+  // Efeito para aplicar o tema - otimizado para ser mais rápido
   useEffect(() => {
-    localStorage.setItem('darkMode', darkMode);
-    document.documentElement.classList.toggle('dark', darkMode);
+    const applyTheme = () => {
+      localStorage.setItem('darkMode', darkMode);
+      if (darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+    
+    // Aplicar tema imediatamente, sem esperar pelo próximo ciclo de render
+    applyTheme();
   }, [darkMode]);
 
   // Observer para preferências do sistema
@@ -34,7 +43,6 @@ export const ThemeProvider = ({ children }) => {
     if (mediaQuery.addEventListener) {
       mediaQuery.addEventListener('change', handleChange);
     } else {
-      // Para navegadores antigos
       mediaQuery.addListener(handleChange);
     }
     

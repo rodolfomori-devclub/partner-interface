@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -7,9 +7,33 @@ const Header = () => {
   const { user } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  
+  // Efeito para detectar scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
-    <header className="bg-secondary shadow-sm sticky top-0 z-50">
+    <header 
+      className={`sticky top-0 z-50 w-full transition-all duration-200 ${
+        scrolled 
+          ? 'bg-secondary/95 shadow-md backdrop-blur-sm' 
+          : 'bg-secondary'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -22,7 +46,7 @@ const Header = () => {
           </div>
 
           {/* Desktop menu */}
-          <nav className="hidden md:flex items-center space-x-4">
+          <nav className="hidden md:flex items-center space-x-1">
             <NavLink
               to="/"
               className={({ isActive }) => 
@@ -52,7 +76,7 @@ const Header = () => {
             
             <button
               onClick={toggleTheme}
-              className={`theme-toggle ${darkMode ? 'theme-toggle-dark' : 'theme-toggle-light'}`}
+              className={`theme-toggle ml-2 ${darkMode ? 'theme-toggle-dark' : 'theme-toggle-light'}`}
               aria-label="Toggle theme"
             >
               {darkMode ? (
@@ -67,17 +91,21 @@ const Header = () => {
             </button>
             
             {user ? (
-              <div className="flex items-center ml-3">
+              <div className="flex items-center ml-4">
                 <Link
                   to="/profile"
-                  className="flex items-center group"
+                  className="flex items-center group ml-2"
                 >
-                  <img 
-                    src={user.avatarUrl} 
-                    alt={`Avatar de ${user.name}`}
-                    className="h-8 w-8 rounded-full border border-primary mr-2"
-                  />
-                  <span className="text-white group-hover:text-primary transition-colors">
+                  <div className="relative">
+                    <img 
+                      src={user.avatarUrl} 
+                      alt={`Avatar de ${user.name}`}
+                      className="h-9 w-9 rounded-full border-2 border-primary object-cover transition-transform group-hover:scale-105"
+                    />
+                    {/* Indicador online */}
+                    <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-400 border-2 border-secondary"></span>
+                  </div>
+                  <span className="ml-2 text-white group-hover:text-primary transition-colors font-medium">
                     {user.name.split(' ')[0]}
                   </span>
                 </Link>
@@ -85,7 +113,7 @@ const Header = () => {
             ) : (
               <Link
                 to="/register"
-                className="btn-primary py-2 px-4 text-sm"
+                className="btn-primary ml-4 py-2 px-4 text-sm"
               >
                 Cadastrar-se
               </Link>
@@ -129,67 +157,69 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-secondary-light">
-            <NavLink
-              to="/"
-              className={({ isActive }) => 
-                `block px-3 py-2 rounded-md text-base font-medium ${isActive ? 'text-primary' : 'text-white hover:text-primary'}`
-              }
+      {/* Mobile menu com animação */}
+      <div 
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          mobileMenuOpen ? 'max-h-96' : 'max-h-0'
+        }`}
+      >
+        <div className="px-4 pt-2 pb-4 space-y-1 bg-secondary-light/80 backdrop-blur-sm">
+          <NavLink
+            to="/"
+            className={({ isActive }) => 
+              `block px-3 py-2.5 rounded-lg text-base font-medium transition-colors ${isActive ? 'text-primary bg-secondary-dark/50' : 'text-white hover:text-primary hover:bg-secondary-dark/30'}`
+            }
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Home
+          </NavLink>
+          
+          <NavLink
+            to="/search"
+            className={({ isActive }) => 
+              `block px-3 py-2.5 rounded-lg text-base font-medium transition-colors ${isActive ? 'text-primary bg-secondary-dark/50' : 'text-white hover:text-primary hover:bg-secondary-dark/30'}`
+            }
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Encontrar Partners
+          </NavLink>
+          
+          <NavLink
+            to="/nearby"
+            className={({ isActive }) => 
+              `block px-3 py-2.5 rounded-lg text-base font-medium transition-colors ${isActive ? 'text-primary bg-secondary-dark/50' : 'text-white hover:text-primary hover:bg-secondary-dark/30'}`
+            }
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Parceiros Próximos
+          </NavLink>
+          
+          {user ? (
+            <Link
+              to="/profile"
+              className="flex items-center px-3 py-2.5 rounded-lg text-base font-medium text-white hover:text-primary hover:bg-secondary-dark/30 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Home
-            </NavLink>
-            
-            <NavLink
-              to="/search"
-              className={({ isActive }) => 
-                `block px-3 py-2 rounded-md text-base font-medium ${isActive ? 'text-primary' : 'text-white hover:text-primary'}`
-              }
+              <img 
+                src={user.avatarUrl} 
+                alt={`Avatar de ${user.name}`}
+                className="h-8 w-8 rounded-full border-2 border-primary mr-2"
+              />
+              <span>
+                Meu Perfil
+              </span>
+            </Link>
+          ) : (
+            <Link
+              to="/register"
+              className="block px-3 py-2.5 rounded-lg text-base font-medium text-primary hover:text-primary-light hover:bg-secondary-dark/30 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Encontrar Partners
-            </NavLink>
-            
-            <NavLink
-              to="/nearby"
-              className={({ isActive }) => 
-                `block px-3 py-2 rounded-md text-base font-medium ${isActive ? 'text-primary' : 'text-white hover:text-primary'}`
-              }
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Parceiros Próximos
-            </NavLink>
-            
-            {user ? (
-              <Link
-                to="/profile"
-                className="flex items-center px-3 py-2"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <img 
-                  src={user.avatarUrl} 
-                  alt={`Avatar de ${user.name}`}
-                  className="h-8 w-8 rounded-full border border-primary mr-2"
-                />
-                <span className="text-white hover:text-primary">
-                  Meu Perfil
-                </span>
-              </Link>
-            ) : (
-              <Link
-                to="/register"
-                className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:text-primary-light"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Cadastrar-se
-              </Link>
-            )}
-          </div>
+              Cadastrar-se
+            </Link>
+          )}
         </div>
-      )}
+      </div>
     </header>
   );
 };
