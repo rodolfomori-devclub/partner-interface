@@ -1,0 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Cores do DevClub */
+  --color-primary: #37E359; /* Verde DevClub */
+  --color-primary-dark: #2BC348;
+  --color-primary-light: #52FF74;
+  
+  --color-secondary: #051626; /* Azul escuro DevClub */
+  --color-secondary-dark: #020A13;
+  --color-secondary-light: #0A2E4D;
+  
+  --color-background-light: #F8F9FA;
+  --color-background-dark: #121212;
+  
+  --color-text-light: #051626;
+  --color-text-dark: #F8F9FA;
+  --color-text-muted-light: #64748B;
+  --color-text-muted-dark: #94A3B8;
+}
+
+/* Estilos base */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  body {
+    @apply bg-background-light dark:bg-secondary text-text-light dark:text-text-dark;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+/* Componentes reutilizáveis */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-md font-medium text-base focus:outline-none transition-all duration-200;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary text-white hover:bg-primary-dark dark:hover:bg-primary-light;
+  }
+  
+  .btn-secondary {
+    @apply btn border border-primary text-primary hover:text-white hover:bg-primary dark:hover:bg-primary-light dark:hover:text-secondary;
+  }
+  
+  .container-section {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10;
+  }
+  
+  .card {
+    @apply bg-white dark:bg-secondary-light rounded-lg shadow-md overflow-hidden transition-all hover:shadow-lg;
+  }
+  
+  .card-user {
+    @apply flex items-center p-4 rounded-lg bg-secondary-light hover:bg-secondary text-white transition-all duration-300 border border-transparent hover:border-primary;
+  }
+
+  .nav-link {
+    @apply px-3 py-2 rounded-md text-sm font-medium text-white hover:text-primary transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-primary;
+  }
+
+  .stat-container {
+    @apply bg-secondary-light rounded-lg p-8 text-center flex flex-col items-center justify-center transition-all hover:shadow-lg hover:shadow-primary/10;
+  }
+
+  .stat-number {
+    @apply text-5xl font-bold text-primary mb-2;
+  }
+
+  .stat-label {
+    @apply text-lg text-white font-medium;
+  }
+
+  .search-input {
+    @apply w-full p-3 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-secondary-light text-secondary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+}
+
+/* Utilitários personalizados */
+@layer utilities {
+  .text-gradient {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-light;
+  }
+  
+  .shadow-green {
+    box-shadow: 0 4px 20px rgba(55, 227, 89, 0.25);
+  }
+  
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Animações */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(55, 227, 89, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(55, 227, 89, 0.9), 0 0 30px rgba(55, 227, 89, 0.3);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+/* Estilos específicos para fundo com pontos brilhantes */
+.bg-particles {
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-particles::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(#37E359 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.1;
+}
+
+/* Scroll suave */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Estilo para partner cards */
+.partner-card {
+  @apply bg-secondary-light rounded-lg overflow-hidden flex flex-col;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.partner-card:hover {
+  @apply shadow-lg;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(55, 227, 89, 0.2);
+}
+
+.partner-avatar {
+  @apply rounded-full border-2;
+  border-color: var(--color-primary);
+}
+
+.level-tag {
+  @apply text-xs px-2 py-1 rounded-full font-medium;
+}
+
+.level-iniciante {
+  @apply bg-blue-500 text-white;
+}
+
+.level-intermediario {
+  @apply bg-yellow-500 text-white;
+}
+
+.level-avancado {
+  @apply bg-red-500 text-white;
+}
+
+.distance-tag {
+  @apply flex items-center text-xs text-gray-300;
+}
+
+/* Estilo para o botão de tema */
+.theme-toggle {
+  @apply p-2 rounded-full focus:outline-none transition-colors;
+}
+
+.theme-toggle-light {
+  @apply bg-yellow-500 text-white;
+}
+
+.theme-toggle-dark {
+  @apply bg-gray-800 text-yellow-400;
+}

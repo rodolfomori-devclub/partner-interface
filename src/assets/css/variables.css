@@ -1,0 +1,134 @@
+/* Variáveis CSS do sistema Encontre um Partner */
+
+:root {
+    /* Cores principais */
+    --color-primary-50: #f0f9ff;
+    --color-primary-100: #e0f2fe;
+    --color-primary-200: #bae6fd;
+    --color-primary-300: #7dd3fc;
+    --color-primary-400: #38bdf8;
+    --color-primary-500: #0ea5e9;
+    --color-primary-600: #0284c7;
+    --color-primary-700: #0369a1;
+    --color-primary-800: #075985;
+    --color-primary-900: #0c4a6e;
+    
+    /* Cores de indigo (alternativa) */
+    --color-indigo-50: #eef2ff;
+    --color-indigo-100: #e0e7ff;
+    --color-indigo-200: #c7d2fe;
+    --color-indigo-300: #a5b4fc;
+    --color-indigo-400: #818cf8;
+    --color-indigo-500: #6366f1;
+    --color-indigo-600: #4f46e5;
+    --color-indigo-700: #4338ca;
+    --color-indigo-800: #3730a3;
+    --color-indigo-900: #312e81;
+    
+    /* Cores de acentuação */
+    --color-success: #10b981; /* Esmeralda */
+    --color-warning: #f59e0b; /* Âmbar */
+    --color-danger: #ef4444;  /* Vermelho */
+    --color-info: #3b82f6;    /* Azul */
+    
+    /* Cores neutras */
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-700: #374151;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+    
+    /* Cores de superfície (Modo Claro) */
+    --color-surface-light: #ffffff;
+    --color-bg-light: #f9fafb;
+    --color-text-light-primary: #111827;
+    --color-text-light-secondary: #4b5563;
+    --color-text-light-tertiary: #9ca3af;
+    --color-border-light: #e5e7eb;
+    
+    /* Cores de superfície (Modo Escuro) */
+    --color-surface-dark: #1f2937;
+    --color-bg-dark: #111827;
+    --color-text-dark-primary: #f9fafb;
+    --color-text-dark-secondary: #d1d5db;
+    --color-text-dark-tertiary: #9ca3af;
+    --color-border-dark: #374151;
+    
+    /* Espaçamentos */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    --spacing-3xl: 4rem;
+    
+    /* Border radius */
+    --radius-sm: 0.125rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+    --radius-full: 9999px;
+    
+    /* Sombras */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    
+    /* Sombras para modo escuro */
+    --shadow-dark-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-dark-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-dark-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --shadow-dark-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    
+    /* Tipografia */
+    --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    --font-size-5xl: 3rem;
+    
+    /* Altura de linha */
+    --line-height-none: 1;
+    --line-height-tight: 1.25;
+    --line-height-snug: 1.375;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
+    --line-height-loose: 2;
+    
+    /* Z-index */
+    --z-index-dropdown: 1000;
+    --z-index-sticky: 1020;
+    --z-index-fixed: 1030;
+    --z-index-modal-backdrop: 1040;
+    --z-index-modal: 1050;
+    --z-index-popover: 1060;
+    --z-index-tooltip: 1070;
+    
+    /* Transições */
+    --transition-fast: 150ms;
+    --transition-normal: 300ms;
+    --transition-slow: 500ms;
+    --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Modo escuro (variáveis CSS específicas para tema escuro) */
+  .dark {
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --ring-color: var(--color-indigo-500);
+    --placeholder-color: var(--color-gray-500);
+  }
