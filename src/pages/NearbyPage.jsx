@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import LocationSearch from '../components/location/LocationSearch';
@@ -11,12 +11,30 @@ const NearbyPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const pageTopRef = useRef(null);
   
-  // Função para lidar com os resultados da pesquisa
+  // Function to handle search results and scroll to top
   const handleSearchResults = (results) => {
     setSearchResults(results);
     setHasSearched(true);
+    
+    // Scroll to top of results after a short delay
+    setTimeout(() => {
+      if (pageTopRef.current) {
+        pageTopRef.current.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 300);
   };
+  
+  // Set up a clean search state if user arrives from another page
+  useEffect(() => {
+    setHasSearched(false);
+    setSearchResults([]);
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
+  }, []);
   
   return (
     <div className="relative min-h-screen">
@@ -24,7 +42,7 @@ const NearbyPage = () => {
       <NetworkAnimation />
       
       <div className="container-section">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto" ref={pageTopRef}>
           {/* Seção de busca ou animação */}
           {!hasSearched ? (
             <div className="mb-12">
@@ -46,14 +64,15 @@ const NearbyPage = () => {
               <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                   {searchResults.length > 0 
-                    ? `Encontramos ${searchResults.length} parceiros` 
-                    : 'Nenhum parceiro encontrado'}
+                    ? `Encontramos ${searchResults.length} partners` 
+                    : 'Nenhum partner encontrado'}
                 </h1>
                 
                 <button 
                   onClick={() => {
                     setHasSearched(false);
                     setSearchResults([]);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
                   className="btn-secondary py-2 px-4 text-sm"
                 >
@@ -65,7 +84,7 @@ const NearbyPage = () => {
               {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-12">
                   <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary"></div>
-                  <p className="mt-4 text-lg text-gray-700 dark:text-gray-300">Buscando parceiros próximos...</p>
+                  <p className="mt-4 text-lg text-gray-700 dark:text-gray-300">Buscando partners próximos...</p>
                 </div>
               ) : (
                 <>
@@ -82,7 +101,7 @@ const NearbyPage = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                         </svg>
                         <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2">
-                          Nenhum parceiro encontrado nessa área
+                          Nenhum partner encontrado nessa área
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 mb-6">
                           Tente aumentar a distância de busca ou procurar em outra localidade
@@ -91,6 +110,7 @@ const NearbyPage = () => {
                           onClick={() => {
                             setHasSearched(false);
                             setSearchResults([]);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}
                           className="btn-primary"
                         >

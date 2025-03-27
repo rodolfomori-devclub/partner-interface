@@ -1,161 +1,168 @@
-import { useCallback, useEffect, useState, useRef, memo } from "react";
+import { useEffect, useRef, memo } from "react";
 import { useTheme } from '../../contexts/ThemeContext';
+import { isLowPerformanceDevice, prefersReducedMotion } from '../../utils/performanceUtils';
 
-// Memorizando o componente para evitar renderizações desnecessárias
 const NetworkAnimation = memo(() => {
   const { darkMode } = useTheme();
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
   const pointsRef = useRef([]);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  
-  // Usar cor verde DevClub
-  const particleColor = "#37E359";
-  const lineColor = "rgba(55, 227, 89, 0.15)";
 
-  // Inicialização com useCallback para prevenir recriações desnecessárias
-  const init = useCallback(() => {
-    if (!canvasRef.current) return;
-    
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const dpr = window.devicePixelRatio || 1;
-    
-    // Set canvas dimensions properly for high DPI displays
-    const rect = canvas.getBoundingClientRect();
-    setDimensions({
-      width: rect.width,
-      height: rect.height
-    });
-    
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
-    
-    // Criar menos pontos para melhorar a performance
-    const numPoints = Math.floor((rect.width * rect.height) / 15000); // Reduzi a densidade de pontos
-    const newPoints = [];
-    
-    for (let i = 0; i < numPoints; i++) {
-      newPoints.push({
-        x: Math.random() * rect.width,
-        y: Math.random() * rect.height,
-        vx: Math.random() * 0.2 - 0.1, // Velocidade reduzida ainda mais
-        vy: Math.random() * 0.2 - 0.1,
-        radius: Math.random() * 1.2 + 0.3 // Pontos menores
-      });
-    }
-    
-    pointsRef.current = newPoints;
-  }, []);
-  
-  const animate = useCallback(() => {
-    if (!canvasRef.current || pointsRef.current.length === 0) return;
-    
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const { width, height } = dimensions;
-    
-    ctx.clearRect(0, 0, width, height);
-    
-    // Otimizando a computação e desenho de pontos
-    const points = pointsRef.current;
-    
-    // Atualizando posições
-    for (let i = 0; i < points.length; i++) {
-      const point = points[i];
-      
-      // Atualizar posição
-      point.x += point.vx;
-      point.y += point.vy;
-      
-      // Lidar com bordas
-      if (point.x < 0 || point.x > width) point.vx *= -1;
-      if (point.y < 0 || point.y > height) point.vy *= -1;
-      
-      // Garantir que esteja dentro do canvas
-      point.x = Math.max(0, Math.min(width, point.x));
-      point.y = Math.max(0, Math.min(height, point.y));
-      
-      // Desenhar partícula
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
-      ctx.fillStyle = particleColor;
-      ctx.fill();
-    }
-    
-    // Desenhar conexões com distância máxima reduzida para evitar muitas linhas
-    // e calcular apenas para pontos próximos
-    const maxDistance = 80; // Reduzido de 120
-    
-    ctx.lineWidth = 0.4; // Linhas mais finas
-    
-    for (let i = 0; i < points.length; i++) {
-      for (let j = i + 1; j < points.length; j++) {
-        const dx = points[i].x - points[j].x;
-        const dy = points[i].y - points[j].y;
-        
-        // Verificação rápida usando distância ao quadrado para evitar raiz quadrada
-        const distanceSquared = dx * dx + dy * dy;
-        const maxDistanceSquared = maxDistance * maxDistance;
-        
-        if (distanceSquared < maxDistanceSquared) {
-          const distance = Math.sqrt(distanceSquared);
-          const opacity = 0.15 * (1 - distance / maxDistance);
-          
-          ctx.strokeStyle = `rgba(55, 227, 89, ${opacity})`;
-          ctx.beginPath();
-          ctx.moveTo(points[i].x, points[i].y);
-          ctx.lineTo(points[j].x, points[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-    
-    animationRef.current = requestAnimationFrame(animate);
-  }, [dimensions, particleColor]);
-  
-  // Configurar canvas
+  // Initialize the animation
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (canvas) {
-      init();
-    }
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    const isLowPerf = isLowPerformanceDevice();
+    const reduceMotion = prefersReducedMotion();
     
-    return () => {
+    // Set canvas dimensions with proper DPI scaling
+    const resizeCanvas = () => {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      
+      ctx.scale(dpr, dpr);
+      
+      // Generate fewer points for better performance but ensure enough for visually pleasing effect
+      const density = isLowPerf || reduceMotion ? 15000 : 10000; // Lower number = more points
+      const numPoints = Math.max(20, Math.floor((rect.width * rect.height) / density));
+      
+      const newPoints = [];
+      for (let i = 0; i < numPoints; i++) {
+        newPoints.push({
+          x: Math.random() * rect.width,
+          y: Math.random() * rect.height,
+          vx: (Math.random() - 0.5) * 0.3, // Increased velocity
+          vy: (Math.random() - 0.5) * 0.3,
+          radius: Math.random() * 2.5 + 1.2 // Larger points for better visibility
+        });
+      }
+      
+      pointsRef.current = newPoints;
+    };
+
+    // Draw animation frame
+    const draw = () => {
+      if (!canvas) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      
+      const points = pointsRef.current;
+      // Stronger colors for dark/light modes
+      const particleColor = darkMode ? "#37E359" : "#0284c7"; // Brighter green for dark mode, stronger blue for light
+      
+      // Draw and update particles
+      for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        
+        // Update position
+        point.x += point.vx;
+        point.y += point.vy;
+        
+        // Bounce off edges
+        if (point.x < 0 || point.x > rect.width) point.vx *= -1;
+        if (point.y < 0 || point.y > rect.height) point.vy *= -1;
+        
+        // Keep within bounds
+        point.x = Math.max(0, Math.min(rect.width, point.x));
+        point.y = Math.max(0, Math.min(rect.height, point.y));
+        
+        // Draw particle with gradient for better appearance
+        const gradient = ctx.createRadialGradient(
+          point.x, point.y, 0,
+          point.x, point.y, point.radius
+        );
+        
+        if (darkMode) {
+          gradient.addColorStop(0, 'rgba(55, 227, 89, 1)'); // Bright center
+          gradient.addColorStop(1, 'rgba(55, 227, 89, 0.3)'); // Faded edge
+        } else {
+          gradient.addColorStop(0, 'rgba(2, 132, 199, 1)');
+          gradient.addColorStop(1, 'rgba(2, 132, 199, 0.3)');
+        }
+        
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      }
+      
+      // Draw connections with thicker, more visible lines
+      const maxDistance = isLowPerf ? 100 : 150; // Increased connection distance
+      ctx.lineWidth = darkMode ? 0.8 : 0.6; // Thicker lines
+      
+      for (let i = 0; i < points.length; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+          const dx = points[i].x - points[j].x;
+          const dy = points[i].y - points[j].y;
+          
+          // Fast distance check using squared distance
+          const distSquared = dx * dx + dy * dy;
+          if (distSquared < maxDistance * maxDistance) {
+            const dist = Math.sqrt(distSquared);
+            // Higher opacity for better visibility
+            const opacity = 0.35 * (1 - dist / maxDistance); // Increased from 0.1 to 0.35
+            
+            if (darkMode) {
+              ctx.strokeStyle = `rgba(55, 227, 89, ${opacity})`;
+            } else {
+              ctx.strokeStyle = `rgba(2, 132, 199, ${opacity})`;
+            }
+            
+            ctx.beginPath();
+            ctx.moveTo(points[i].x, points[i].y);
+            ctx.lineTo(points[j].x, points[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      // Request next frame with appropriate throttling
+      animationRef.current = requestAnimationFrame(draw);
+    };
+
+    // Handle window resize
+    const handleResize = () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
-    };
-  }, [init]);
-  
-  // Iniciar animação quando os pontos estiverem prontos
-  useEffect(() => {
-    if (pointsRef.current.length > 0) {
-      animationRef.current = requestAnimationFrame(animate);
-      return () => {
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-      };
-    }
-  }, [animate, dimensions]);
-  
-  // Lidar com redimensionamento
-  useEffect(() => {
-    const handleResize = () => {
-      if (canvasRef.current) {
-        // Cancelar a animação atual antes de reinicializar
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-        init();
-      }
+      resizeCanvas();
+      animationRef.current = requestAnimationFrame(draw);
     };
     
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [init]);
+    // Initialize
+    resizeCanvas();
+    draw();
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup function
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+    };
+  }, [darkMode]);
+  
+  // Add one frame delay to force a render cycle after the canvas is mounted
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }, 50);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   return (
     <canvas
@@ -163,7 +170,7 @@ const NetworkAnimation = memo(() => {
       className="absolute inset-0 w-full h-full z-0"
       style={{ 
         background: darkMode ? '#051626' : '#F8F9FA',
-        opacity: 0.7 // Reduzindo um pouco a opacidade para melhorar desempenho visual
+        opacity: 1 // Increased from 0.8 to 1 for full visibility
       }}
       aria-hidden="true"
     />

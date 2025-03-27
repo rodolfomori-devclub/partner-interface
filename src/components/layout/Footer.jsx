@@ -35,7 +35,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <Link to="/nearby" className="text-white/60 hover:text-primary transition-colors">
-                    Parceiros Próximos
+                    Partners Próximos
                   </Link>
                 </li>
                 <li>

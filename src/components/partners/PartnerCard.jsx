@@ -1,9 +1,15 @@
 import { useState, memo } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { formatDistance, formatStudyTimes, formatProgrammingLevel } from '../../utils/locationUtils';
+import LoginModal from '../auth/LoginModal';
 
 // Memorizando o componente para evitar renderizações desnecessárias
 const PartnerCard = memo(({ partner }) => {
+  const { isAuthenticated, login } = useAuth();
+  const navigate = useNavigate();
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   
   // Format WhatsApp number for link - calculado apenas uma vez
   const whatsappLink = `https://wa.me/${partner.whatsapp.replace(/\D/g, '')}`;
@@ -34,6 +40,21 @@ const PartnerCard = memo(({ partner }) => {
   // Handle modal open/close
   const openModal = () => setShowDetailsModal(true);
   const closeModal = () => setShowDetailsModal(false);
+  
+  // Lidar com tentativa de contato quando não logado
+  const handleContactClick = (e) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowLoginModal(true);
+    }
+  };
+  
+  // Lidar com login bem-sucedido
+  const handleLoginSuccess = (userData) => {
+    login(userData);
+    setShowLoginModal(false);
+  };
   
   return (
     <>
@@ -109,18 +130,34 @@ const PartnerCard = memo(({ partner }) => {
               Detalhes
             </button>
             
-            <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="flex-1 btn-primary group"
-            >
-              <svg className="h-5 w-5 mr-2 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.2.301-.767.966-.94 1.164-.173.199-.347.223-.647.075-.3-.15-1.267-.465-2.414-1.485-.893-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.134-.135.301-.345.451-.52.146-.174.194-.3.3-.5.099-.2.05-.374-.025-.524-.075-.15-.672-1.62-.922-2.221-.24-.6-.487-.51-.673-.51-.172 0-.372-.015-.572-.015-.2 0-.523.074-.797.365-.273.3-1.045 1.02-1.045 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.16 5.1 4.43.714.306 1.27.489 1.704.625.714.227 1.365.195 1.88.118.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345m-5.446 7.443h-.016c-1.77 0-3.524-.48-5.055-1.38l-.36-.214-3.75.975 1.005-3.645-.239-.375a9.869 9.869 0 01-1.516-5.26c0-5.445 4.455-9.885 9.942-9.885a9.865 9.865 0 017.021 2.91 9.788 9.788 0 012.909 6.99c-.004 5.444-4.46 9.885-9.935 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a12.062 12.062 0 005.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411" />
-              </svg>
-              Contato
-            </a>
+            {isAuthenticated ? (
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex-1 btn-primary group"
+              >
+                <svg className="h-5 w-5 mr-2 transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.2.301-.767.966-.94 1.164-.173.199-.347.223-.647.075-.3-.15-1.267-.465-2.414-1.485-.893-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.134-.135.301-.345.451-.52.146-.174.194-.3.3-.5.099-.2.05-.374-.025-.524-.075-.15-.672-1.62-.922-2.221-.24-.6-.487-.51-.673-.51-.172 0-.372-.015-.572-.015-.2 0-.523.074-.797.365-.273.3-1.045 1.02-1.045 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.16 5.1 4.43.714.306 1.27.489 1.704.625.714.227 1.365.195 1.88.118.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345m-5.446 7.443h-.016c-1.77 0-3.524-.48-5.055-1.38l-.36-.214-3.75.975 1.005-3.645-.239-.375a9.869 9.869 0 01-1.516-5.26c0-5.445 4.455-9.885 9.942-9.885a9.865 9.865 0 017.021 2.91 9.788 9.788 0 012.909 6.99c-.004 5.444-4.46 9.885-9.935 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a12.062 12.062 0 005.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411" />
+                </svg>
+                Contato
+              </a>
+            ) : (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowLoginModal(true);
+                }}
+                className="flex-1 btn-primary group"
+              >
+                <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Login p/ Contato
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -151,6 +188,7 @@ const PartnerCard = memo(({ partner }) => {
             </div>
             
             <div className="modal-body">
+              {/* Conteúdo do modal permanece o mesmo */}
               <div className="flex flex-col sm:flex-row items-center sm:items-start mb-6">
                 <img
                   src={partner.avatarUrl}
@@ -195,41 +233,63 @@ const PartnerCard = memo(({ partner }) => {
                     {partner.about}
                   </p>
                 </div>
-                
-                <div className="divider"></div>
-                
-                {/* Seção de skills (exemplo - você pode adicionar mais informações no perfil) */}
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">Interesses</h4>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="tag-primary">JavaScript</span>
-                    <span className="tag-primary">React</span>
-                    <span className="tag-primary">Node.js</span>
-                    <span className="tag-primary">TailwindCSS</span>
-                    <span className="tag-primary">Frontend</span>
-                  </div>
-                </div>
               </div>
             </div>
             
             <div className="modal-footer">
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full btn-primary flex items-center justify-center"
-              >
-                <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.2.301-.767.966-.94 1.164-.173.199-.347.223-.647.075-.3-.15-1.267-.465-2.414-1.485-.893-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.134-.135.301-.345.451-.52.146-.174.194-.3.3-.5.099-.2.05-.374-.025-.524-.075-.15-.672-1.62-.922-2.221-.24-.6-.487-.51-.673-.51-.172 0-.372-.015-.572-.015-.2 0-.523.074-.797.365-.273.3-1.045 1.02-1.045 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.16 5.1 4.43.714.306 1.27.489 1.704.625.714.227 1.365.195 1.88.118.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345m-5.446 7.443h-.016c-1.77 0-3.524-.48-5.055-1.38l-.36-.214-3.75.975 1.005-3.645-.239-.375a9.869 9.869 0 01-1.516-5.26c0-5.445 4.455-9.885 9.942-9.885a9.865 9.865 0 017.021 2.91 9.788 9.788 0 012.909 6.99c-.004 5.444-4.46 9.885-9.935 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a12.062 12.062 0 005.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411" />
-                </svg>
-                Entrar em contato com {firstName} pelo WhatsApp
-              </a>
-              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
-                Lembre-se: o contato deve ser apenas para fins de estudo e networking.
-              </p>
+              {isAuthenticated ? (
+                <>
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full btn-primary flex items-center justify-center"
+                  >
+                    <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.498 14.382c-.301-.15-1.767-.867-2.04-.966-.273-.101-.473-.15-.673.15-.2.301-.767.966-.94 1.164-.173.199-.347.223-.647.075-.3-.15-1.267-.465-2.414-1.485-.893-.795-1.484-1.77-1.66-2.07-.174-.3-.019-.465.13-.615.134-.135.301-.345.451-.52.146-.174.194-.3.3-.5.099-.2.05-.374-.025-.524-.075-.15-.672-1.62-.922-2.221-.24-.6-.487-.51-.673-.51-.172 0-.372-.015-.572-.015-.2 0-.523.074-.797.365-.273.3-1.045 1.02-1.045 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.16 5.1 4.43.714.306 1.27.489 1.704.625.714.227 1.365.195 1.88.118.574-.091 1.767-.721 2.016-1.426.255-.705.255-1.29.18-1.425-.074-.135-.27-.21-.57-.345m-5.446 7.443h-.016c-1.77 0-3.524-.48-5.055-1.38l-.36-.214-3.75.975 1.005-3.645-.239-.375a9.869 9.869 0 01-1.516-5.26c0-5.445 4.455-9.885 9.942-9.885a9.865 9.865 0 017.021 2.91 9.788 9.788 0 012.909 6.99c-.004 5.444-4.46 9.885-9.935 9.885M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a12.062 12.062 0 005.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.495-8.411" />
+                    </svg>
+                    Entrar em contato com {firstName} pelo WhatsApp
+                  </a>
+                  <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Lembre-se: o contato deve ser apenas para fins de estudo e networking.
+                  </p>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <div className="p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
+                    <p className="text-sm text-yellow-800 dark:text-yellow-200 text-center">
+                      Faça login para ver as informações de contato deste partner
+                    </p>
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowLoginModal(true)}
+                      className="flex-1 btn-primary"
+                    >
+                      Fazer Login
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigate('/register')}
+                      className="flex-1 btn-secondary"
+                    >
+                      Cadastrar-se
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
+      )}
+      
+      {/* Login Modal */}
+      {showLoginModal && !isAuthenticated && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
       )}
     </>
   );

@@ -213,7 +213,7 @@ const ProfilePage = () => {
               <input
                 type="text"
                 id="name"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed"
+                className="px-1 py-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed"
                 value={formData.name}
                 onChange={(e) => updateFormData('name', e.target.value)}
                 disabled={!isEditing}
@@ -228,7 +228,7 @@ const ProfilePage = () => {
               <input
                 type="tel"
                 id="whatsapp"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed"
+                className=" focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed"
                 value={formData.whatsapp}
                 onChange={(e) => updateFormData('whatsapp', e.target.value)}
                 disabled={!isEditing}
@@ -291,7 +291,7 @@ const ProfilePage = () => {
               <input
                 type="text"
                 id="cep"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed"
+                className="px-1 py-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed"
                 value={formData.cep}
                 onChange={(e) => updateFormData('cep', e.target.value)}
                 disabled={!isEditing}
@@ -326,7 +326,7 @@ const ProfilePage = () => {
               <textarea
                 id="about"
                 rows={4}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed"
+                className="px-1 py-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white disabled:opacity-70 disabled:cursor-not-allowed"
                 value={formData.about}
                 onChange={(e) => updateFormData('about', e.target.value)}
                 disabled={!isEditing}

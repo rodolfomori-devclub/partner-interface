@@ -9,8 +9,17 @@ const api = axios.create({
   },
 });
 
+
 // Serviços para usuários
 export const userService = {
+  verifyCredentials: async (email, whatsapp) => {
+    try {
+      const response = await api.post('/users/verify', { email, whatsapp });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
   // Registrar um novo usuário
   register: async (userData) => {
     try {

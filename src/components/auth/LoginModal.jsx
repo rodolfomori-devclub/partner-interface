@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { userService } from '../../services/api';
 import Modal from '../common/Modal';
+import { formatPhoneNumber } from '../../utils/formatUtils'; // Importe a função de formatação
 
 const LoginModal = ({ onClose, onLoginSuccess }) => {
   const [credentials, setCredentials] = useState({
@@ -13,6 +14,12 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
   // Update credentials
   const updateCredentials = (field, value) => {
     setCredentials(prev => ({ ...prev, [field]: value }));
+  };
+  
+  // Formatação para o WhatsApp
+  const handleWhatsAppChange = (e) => {
+    const formattedValue = formatPhoneNumber(e.target.value);
+    updateCredentials('whatsapp', formattedValue);
   };
   
   // Handle login form submission
@@ -34,8 +41,18 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
         credentials.whatsapp
       );
       
+      // Definir duração do token para 30 dias
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 30);
+      
+      // Adicionar data de expiração
+      const userWithExpiry = {
+        ...userData,
+        expiry: expiryDate.toISOString()
+      };
+      
       // Notify parent component of successful login
-      onLoginSuccess(userData);
+      onLoginSuccess(userWithExpiry);
       
       toast.success('Login realizado com sucesso!');
     } catch (error) {
@@ -56,7 +73,7 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
           <input
             type="email"
             id="login-email"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="py-2 px-1 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             value={credentials.email}
             onChange={(e) => updateCredentials('email', e.target.value)}
             placeholder="seu.email@devclub.com"
@@ -71,9 +88,9 @@ const LoginModal = ({ onClose, onLoginSuccess }) => {
           <input
             type="tel"
             id="login-whatsapp"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="py-2 px-1 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
             value={credentials.whatsapp}
-            onChange={(e) => updateCredentials('whatsapp', e.target.value)}
+            onChange={handleWhatsAppChange}
             placeholder="(99) 99999-9999"
             required
           />

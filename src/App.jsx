@@ -6,6 +6,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import LoadingScreen from './components/common/LoadingScreen';
+import LoginPage from './pages/LoginPage'
 import { isLowPerformanceDevice, prefersReducedMotion } from './utils/performanceUtils';
 
 // Lazy load das páginas para melhorar performance inicial
@@ -50,6 +51,7 @@ function App() {
               <Suspense fallback={<LoadingScreen />}>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/search" element={<SearchPage />} />

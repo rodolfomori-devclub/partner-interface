@@ -469,3 +469,108 @@
 .glass {
   @apply backdrop-blur-md bg-white/30 dark:bg-secondary/60 border border-white/20 dark:border-secondary-light/30;
 }
+
+/* Add these styles to src/index.css */
+
+/* Remove default browser outline */
+:focus {
+  outline: none;
+}
+
+/* Better focus styling for accessibility */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+/* Enhanced input styling */
+.input-field {
+  @apply w-full px-4 py-3 rounded-lg border transition-all duration-200;
+  @apply border-gray-300 dark:border-gray-700;
+  @apply bg-white dark:bg-secondary-light;
+  @apply text-gray-900 dark:text-white;
+  @apply shadow-sm;
+  @apply focus:border-primary focus:ring-2 focus:ring-primary/30 focus:shadow-md;
+}
+
+.input-field:hover:not(:disabled) {
+  @apply border-gray-400 dark:border-gray-600;
+}
+
+.input-field:disabled {
+  @apply opacity-60 cursor-not-allowed bg-gray-100 dark:bg-gray-800;
+}
+
+/* Enhanced label styling */
+.input-label {
+  @apply block text-sm font-medium mb-1.5;
+  @apply text-gray-700 dark:text-gray-300;
+}
+
+/* Enhanced select styling */
+select.input-field {
+  @apply appearance-none bg-no-repeat;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-size: 1.25em 1.25em;
+  padding-right: 2.5rem;
+}
+
+/* Floating label effect for more modern inputs (optional) */
+.input-floating {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.input-floating input {
+  height: 3.5rem;
+  padding-top: 1.25rem;
+}
+
+.input-floating label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  padding: 1rem 0.75rem;
+  pointer-events: none;
+  border: 1px solid transparent;
+  transform-origin: 0 0;
+  transition: opacity .2s ease-in-out, transform .2s ease-in-out;
+}
+
+.input-floating input:focus ~ label,
+.input-floating input:not(:placeholder-shown) ~ label {
+  transform: scale(.85) translateY(-.5rem) translateX(.15rem);
+  opacity: .65;
+}
+
+/* Improve button styling */
+.btn {
+  @apply relative overflow-hidden inline-flex items-center justify-center;
+  @apply px-5 py-2.5 rounded-lg font-medium text-base transition-all duration-200;
+  @apply focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  @apply disabled:opacity-70 disabled:cursor-not-allowed;
+}
+
+.btn::after {
+  content: '';
+  @apply absolute inset-0 bg-white/0 transition-all duration-300;
+}
+
+.btn:not(:disabled):active::after {
+  @apply bg-black/10 dark:bg-white/10;
+  transition-duration: 75ms;
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  @apply rounded border-gray-300 text-primary shadow-sm;
+  @apply focus:border-primary focus:ring focus:ring-primary/30 focus:ring-offset-0;
+}
+
+/* Radio button styling */
+input[type="radio"] {
+  @apply border-gray-300 text-primary shadow-sm;
+  @apply focus:border-primary focus:ring focus:ring-primary/30 focus:ring-offset-0;
+}

@@ -1,12 +1,14 @@
 import React, { useState, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 import { searchService } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 /**
  * Componente de pesquisa por localização
  * Permite buscar parceiros próximos por CEP ou geolocalização
  */
 const LocationSearch = ({ onSearch, isLoading, setIsLoading }) => {
+  const { user } = useAuth();
   const [cep, setCep] = useState('');
   const [distance, setDistance] = useState('50');
   const [gettingLocation, setGettingLocation] = useState(false);
@@ -38,13 +40,26 @@ const LocationSearch = ({ onSearch, isLoading, setIsLoading }) => {
     setIsLoading(true);
     
     try {
-      const response = await searchService.searchNearby(numericCep, parseInt(distance), {});
+      // Create search parameters with user exclusion
+      const searchParams = {};
+      
+      // Exclude current user from results if logged in
+      if (user && user.email) {
+        searchParams.excludeEmail = user.email;
+      }
+      
+      const response = await searchService.searchNearby(
+        numericCep, 
+        parseInt(distance), 
+        searchParams
+      );
+      
       onSearch(response);
       
       if (response.length === 0) {
-        toast.info('Nenhum parceiro encontrado nessa área. Tente aumentar a distância.');
+        toast.info('Nenhum partner encontrado nessa área. Tente aumentar a distância.');
       } else {
-        toast.success(`Encontramos ${response.length} parceiros perto de você!`);
+        toast.success(`Encontramos ${response.length} partners perto de você!`);
       }
     } catch (error) {
       console.error('Erro ao buscar por CEP:', error);
@@ -83,14 +98,27 @@ const LocationSearch = ({ onSearch, isLoading, setIsLoading }) => {
               ? `${postalCode.slice(0, 5)}-${postalCode.slice(5)}` 
               : postalCode);
               
+            // Create search parameters with user exclusion
+            const searchParams = {};
+            
+            // Exclude current user from results if logged in
+            if (user && user.email) {
+              searchParams.excludeEmail = user.email;
+            }
+            
             // Buscar parceiros com o CEP obtido
-            const searchResponse = await searchService.searchNearby(postalCode, parseInt(distance), {});
+            const searchResponse = await searchService.searchNearby(
+              postalCode, 
+              parseInt(distance), 
+              searchParams
+            );
+            
             onSearch(searchResponse);
             
             if (searchResponse.length === 0) {
-              toast.info('Nenhum parceiro encontrado nessa área. Tente aumentar a distância.');
+              toast.info('Nenhum partner encontrado nessa área. Tente aumentar a distância.');
             } else {
-              toast.success(`Encontramos ${searchResponse.length} parceiros perto de você!`);
+              toast.success(`Encontramos ${searchResponse.length} partners perto de você!`);
             }
           } else {
             toast.error('Não foi possível obter o CEP da sua localização. Por favor, digite manualmente.');
@@ -131,7 +159,7 @@ const LocationSearch = ({ onSearch, isLoading, setIsLoading }) => {
         maximumAge: 0,
       }
     );
-  }, [distance, onSearch, setIsLoading]);
+  }, [distance, onSearch, setIsLoading, user]);
   
   return (
     <div className="bg-white dark:bg-secondary-light rounded-xl p-6 shadow-lg">
