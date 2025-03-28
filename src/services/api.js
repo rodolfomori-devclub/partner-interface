@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+// const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL_PROD = 'https://partner-api.launchcontrol.com.br/api';
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_URL_PROD,
   headers: {
     'Content-Type': 'application/json',
   },
